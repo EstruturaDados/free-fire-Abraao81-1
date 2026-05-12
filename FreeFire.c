@@ -10,6 +10,7 @@
 typedef struct {
     char nome[MAX_STR_LEN];
     char tipo[MAX_STR_LEN];
+    int quantidade; // Adicionado para atender ao requisito
 } Item;
 
 // PROTÓTIPOS
@@ -17,6 +18,7 @@ void inicializarMochila(int *numItens);
 void inserirItem(Item mochila[], int *numItens);
 void removerItem(Item mochila[], int *numItens);
 void listarItem(Item mochila[], int numItens);
+void buscaSequencialIterativa(Item mochila[], int numItens, char nomeBusca[]);
 void menuitem();
 
 // MAIN
@@ -48,6 +50,10 @@ void inserirItem(Item mochila[], int *numItens) {
     printf("Tipo: ");
     fgets(mochila[*numItens].tipo, MAX_STR_LEN, stdin);
     mochila[*numItens].tipo[strcspn(mochila[*numItens].tipo, "\n")] = 0;
+    
+    printf("Quantidade: ");
+    scanf("%d", &mochila[*numItens].quantidade);
+    getchar(); // Limpa o buffer
 
     (*numItens)++;
 
@@ -98,18 +104,37 @@ void listarItem(Item mochila[], int numItens) {
     printf("\n--- ITENS NA MOCHILA ---\n");
 
     for (int i = 0; i < numItens; i++) {
-        printf("%d - %s (%s)\n",
-               i + 1,
+        printf("%d - %s (%s) | Qtd: %d\n", i + 1,
                mochila[i].nome,
-               mochila[i].tipo);
+               mochila[i].tipo,
+               mochila[i].quantidade);
     }
 }
+void buscaSequencialIterativa(Item mochila[], int numItens, char nomeBusca[]) {
+    int achou = 0;
 
+    for (int i = 0; i < numItens; i++) {
+        // Compara o nome que está na mochila com o nome digitado
+        if (strcmp(mochila[i].nome, nomeBusca) == 0) {
+            printf("\n--- ITEM ENCONTRADO ---");
+            printf("\nNome: %s", mochila[i].nome);
+            printf("\nTipo: %s", mochila[i].tipo);
+            printf("\nQuantidade: %d\n", mochila[i].quantidade);
+            achou = 1;
+            break; // Sai do laço pois já achou
+        }
+    }
+
+    if (!achou) {
+        printf("\nO item '%s' nao foi encontrado na mochila.\n", nomeBusca);
+    }
+}
 // MENU
 void menuitem() {
 
     Item mochila[TAM_MAX]; // Vetor mochila:
     int numItens;
+    char nomeParaBusca[MAX_STR_LEN];
 
     inicializarMochila(&numItens);
 
@@ -120,6 +145,7 @@ void menuitem() {
         printf("1 - Inserir\n");
         printf("2 - Remover\n");
         printf("3 - Listar\n");
+        printf("4 - Buscar Item na Mochila\n");
         printf("0 - Sair\n");
 
         scanf("%d", &opcao);
@@ -137,6 +163,13 @@ void menuitem() {
 
             case 3:
                 listarItem(mochila, numItens);  // 3. Listar todos os itens
+                break;
+             case 4:
+                printf("Digite o nome do item que deseja buscar: ");
+                fgets(nomeParaBusca, MAX_STR_LEN, stdin);
+                nomeParaBusca[strcspn(nomeParaBusca, "\n")] = 0;
+
+                buscaSequencialIterativa(mochila, numItens, nomeParaBusca);
                 break;
         }
 
